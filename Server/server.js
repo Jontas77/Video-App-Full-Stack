@@ -41,17 +41,17 @@ app.post("/", async (req, res) => {
     const { id, title, vidurl, rating } = newVideo;
 
     const myURL = new URL(vidurl);
-    const result = await pool.query(
-      "INSERT INTO videos (id, title, vidurl, rating) VALUES ($1, $2, $3, $4) RETURNING *",
-      [id, title, vidurl, rating]
-    );
-
     if (!title || title === "" || !vidurl || vidurl === "") {
       return res.status(400).json({
         result: "failure",
         message: "Video could not be saved",
       });
     }
+   
+    const result = await pool.query(
+      "INSERT INTO videos (id, title, vidurl, rating) VALUES ($1, $2, $3, $4) RETURNING *",
+      [id, title, vidurl, rating]
+    );
 
     res.send("Video is Created!");
   } catch (error) {
@@ -70,6 +70,30 @@ app.get("/:id", async (req, res) => {
     console.error(error.message);
   }
 });
+
+// UPDATE "/:id"
+app.put("/incr/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating } = req.body;
+    const result = await pool.query('UPDATE videos SET rating = $1 + 1  WHERE id = $2', [rating, id]);
+    res.send("Votes is updated")
+  } catch (error) {
+    console.error(error.message)
+  }
+});
+
+app.put("/decr/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating } = req.body;
+    const result = await pool.query('UPDATE videos SET rating = $1 - 1  WHERE id = $2', [rating, id]);
+    res.send("Votes is updated")
+  } catch (error) {
+    console.error(error.message)
+  }
+});
+
 
 // DELETE "/:id"
 app.delete("/:id", async (req, res) => {
