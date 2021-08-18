@@ -3,6 +3,7 @@ const cors = require("cors");
 const { Pool } = require("pg");
 const ID = require("nodejs-unique-numeric-id-generator");
 const url = require("url");
+require('dotenv').config();
 
 const app = express();
 
@@ -13,12 +14,14 @@ app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 5000;
 
 const pool = new Pool({
-  user: "jonathanh",
-  host: "localhost",
-  database: "videosdb",
-  password: "Heugh",
-  port: 5432,
+  user: process.env.USER,
+  host: process.env.HOST,
+  database: process.env.DATABASE,
+  password: process.env.PASSWORD,
+  port: process.env.DBPORT
 });
+
+
 
 // GET "/"
 app.get("/", async (req, res) => {
@@ -108,3 +111,14 @@ app.delete("/:id", async (req, res) => {
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
+
+
+// Connect to Heroku DB
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: {
+//     rejectUnauthorized: false
+//   }
+// });
+
+// pool.connect();
