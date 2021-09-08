@@ -3,7 +3,8 @@ const controller = require("../users/controller");
 
 const router = Router();
 
-router.get("/", (req, res) => res.json({ msg: "Hi from users route" }));
+// Registering
+router.post("/", controller.createNewUser);
 
 
 module.exports = router;

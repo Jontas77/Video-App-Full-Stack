@@ -17,7 +17,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/videos", videoRoutes);
-app.use("/users", userRoutes);
+
+//Register and Log in
+app.use("/users/register", userRoutes);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
