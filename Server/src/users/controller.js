@@ -69,8 +69,22 @@ const verifyUser = async (req, res) => {
   }
 };
 
+const getDashboard = async (req, res) => {
+  try {
+    
+    const user = await pool.query(queries.getUserById, [req.user]);
+
+    res.json(user.rows)
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 module.exports = {
   registerNewUser,
   loginUser,
-  verifyUser
+  verifyUser,
+  getDashboard,
 };
