@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const videoRoutes = require("./src/videos/routes");
-const userRoutes = require("./src/users/routes");
-
+const registerRoutes = require("./src/users/registerRoutes");
+const loginRoutes = require("./src/users/loginRoutes");
+const verifyRoute = require("./src/users/verifyRoute")
 
 const app = express();
 
@@ -18,8 +19,14 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/videos", videoRoutes);
 
-//Register and Log in
-app.use("/users/register", userRoutes);
+//Register user
+app.use("/users", registerRoutes);
+
+//Log in user
+app.use("/users", loginRoutes);
+
+// verify user
+app.use("/users", verifyRoute);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 

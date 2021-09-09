@@ -1,9 +1,14 @@
 const pool = require("../../db");
 const queries = require("../users/queries");
+const { Router } = require("express");
 const bcrypt = require("bcrypt");
 const jwtGenerator = require("../../utils/jwtGenerator");
+const validation = require("../../middleware/validation");
+const authorisation = require("../../middleware/authorisation");
 
-const registerNewUser = async (req, res) => {
+const router = Router();
+
+router.post("/register", validation, async (req, res) => {
   try {
     const { user_name, user_email, user_password } = req.body;
 
@@ -22,7 +27,7 @@ const registerNewUser = async (req, res) => {
       user_email,
       bcryptPassword,
     ]);
-
+   
     // Generate jwt token
     const token = jwtGenerator(newUser.rows[0].user_id);
 
@@ -31,9 +36,9 @@ const registerNewUser = async (req, res) => {
     console.error(error.message);
     res.status(500).send("Server Error");
   }
-};
+});
 
-const loginUser = async (req, res) => {
+router.post("/login", validation, async (req, res) => {
   try {
     const { user_email, user_password } = req.body;
 
@@ -42,35 +47,32 @@ const loginUser = async (req, res) => {
       return res.status(401).send("Password or Email incorrect");
     }
 
-    const validPassword = await bcrypt.compare(
-      user_password,
-      user.rows[0].user_password
-    );
+    const validPassword = await bcrypt.compare(user_password, user.rows[0].user_password);
 
-    if (!validPassword) {
+    if(!validPassword) {
       return res.status(401).send("Password or Email incorrect");
     }
 
     const token = jwtGenerator(newUser.rows[0].user_id);
 
     res.json({ token });
+
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error")
   }
-};
+});
 
-const verifyUser = async (req, res) => {
+router.get("/is-verify", authorisation, async (req, res) => {
   try {
+    
     res.json(true);
+
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error")
   }
-};
+})
 
-module.exports = {
-  registerNewUser,
-  loginUser,
-  verifyUser
-};
+module.exports = router;
+
